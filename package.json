@@ -1,0 +1,25 @@
+{
+  "name": "ripley",
+  "version": "0.0.1",
+  "description": "Prueba seleccion Ripley",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hcifuentes/backRipley.git"
+  },
+  "author": "Hugo Cifuentes",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hcifuentes/backRipley/issues"
+  },
+  "homepage": "https://github.com/hcifuentes/backRipley#readme",
+  "dependencies": {
+    "express": "^4.16.4",
+    "redis": "^2.8.0",
+    "request": "^2.88.0"
+  }
+}
