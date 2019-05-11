@@ -1,5 +1,8 @@
+
 var redisClient = require('../db/redis');
 var City = require('../models/City');
+
+var category = 'city';
 
 var cl = new City('CL', 'Santiago', -33.4533303, -70.6967031);
 var ch = new City('CH', 'Zurich', 47.3775499, 8.4666755);
@@ -11,15 +14,22 @@ var usa = new City('USA', 'Georgia', 42.3173563, 42.2366201);
 var cityArray = [cl, ch, nz, au, uk, usa];
 
 for (const city of cityArray) {
-    redisClient.set(city._code, JSON.stringify(city));
+    redisClient.hmset(category, { [city._code]: JSON.stringify(city) }, (err, reply) => {
+        if (err) {
+            console.log(err)
+        } else {
+            console.log("save");
+        }
+    });
 }
 
-exports.getAllKeys = function() {
+
+exports.getAllKeys = function () {
     var keys;
     return {
         findAllKeys: function () {
             return new Promise((resolve, reject) => {
-                redisClient.keys('*',  (error, result) => {
+                redisHashesClient.keys('*', (error, result) => {
                     if (error) {
                         throw error;
                     }
@@ -29,25 +39,28 @@ exports.getAllKeys = function() {
                 });
             });
         },
-        get: function() {
+        get: function () {
             return keys;
         }
     }
 }
 
-exports.getByKey = function() {
+exports.getByKey = function () {
     var city = null;
 
     return {
         findCity: function (key) {
             return new Promise((resolve, reject) => {
-                redisClient.get(key, (error, result) => {
-                    if (error) {
-                        throw error;
+                redisClient.hmget(category, key, (err, object) => {
+                    if (err) {
+                        console.log(err);
+                        reject(err);
+                    } else {
+                        console.log(object);
+                        city = object;
+                        resolve(object);
                     }
-                    city = result;
-                    resolve();
-                })
+                });
             });
         },
         get: function () {

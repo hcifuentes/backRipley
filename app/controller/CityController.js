@@ -10,8 +10,8 @@ app.listen(3000, function () {
 
 app.get('/', (req, res) => {
     var fun = cityDao.getByKey();
-    fun.findCity('CL') 
-    .then(() => {
+    fun.findCity('CL')
+    .then(()=> {
         res.send({ data: JSON.parse(fun.get())  });
     });
 });
