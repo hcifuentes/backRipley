@@ -14,15 +14,22 @@ var usa = new City('USA', 'Georgia', 42.3173563, 42.2366201);
 var cityArray = [cl, ch, nz, au, uk, usa];
 
 for (const city of cityArray) {
+    save(city);
+}
+
+function save(city) {
     redisClient.hmset(category, { [city._code]: JSON.stringify(city) }, (err, reply) => {
         if (err) {
             console.log(err)
         } else {
-            console.log("save");
+            console.log("saved");
         }
     });
 }
 
+exports.saveCity = function(city) {
+    save(city);
+}
 
 exports.getAllKeys = function () {
     var keys;
@@ -33,7 +40,6 @@ exports.getAllKeys = function () {
                     if (error) {
                         throw error;
                     }
-                    console.log(result);
                     keys = result;
                     resolve();
                 });
@@ -45,6 +51,29 @@ exports.getAllKeys = function () {
     }
 }
 
+exports.getAllCities = function() {
+    var cities = [];
+
+    return {
+        findAllCities: function (key) {
+            return new Promise((resolve, reject) => {
+                redisClient.hgetall(category, (err, object) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        cities = object;
+                        resolve(object);
+                    }
+                });
+            });
+        },
+        get: function () {
+            return cities;
+        }
+    }
+}
+
+
 exports.getByKey = function () {
     var city = null;
 
@@ -53,10 +82,8 @@ exports.getByKey = function () {
             return new Promise((resolve, reject) => {
                 redisClient.hmget(category, key, (err, object) => {
                     if (err) {
-                        console.log(err);
                         reject(err);
                     } else {
-                        console.log(object);
                         city = object;
                         resolve(object);
                     }

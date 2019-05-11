@@ -29,6 +29,20 @@ class City {
         this._code = code;
     }
 
+    /**
+     *  @param {float} temp
+     */
+    set temp(temp) {
+        this._temp = temp;
+    }
+
+    /**
+     *  @param {string} tz timezone
+     */
+    set tz(tz) {
+        this.tz = tz;
+    }
+
     get name() {
         return this._name;
     }
