@@ -19,11 +19,6 @@ for (const city of cityArray) {
 
 function save(city) {
     redisClient.hmset(category, { [city._code]: JSON.stringify(city) }, (err, reply) => {
-        if (err) {
-            console.log(err)
-        } else {
-            console.log("saved");
-        }
     });
 }
 
