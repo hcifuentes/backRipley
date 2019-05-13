@@ -11,9 +11,7 @@ server.listen(3001, function () {
 });
 
 io.on('connection', (socket) => {
-    console.log('Un cliente se ha conectado');
     socket.on("disconnect", () => {
-        console.log("Un cliente se ha desconectado");
     });
 });
 

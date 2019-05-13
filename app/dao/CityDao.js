@@ -46,7 +46,6 @@ exports.updateInfo = function (socket, request) {
 
 function getRequest(city, socket, request) {
     var api = url + city._latLng._lat + ',' + city._latLng._lng; 
-    console.log(api);
     request({
         url: api,
         json: true
