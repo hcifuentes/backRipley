@@ -14,7 +14,7 @@ var ch = new City('CH', 'Zurich', 47.3775499, 8.4666755);
 var nz = new City('NZ', 'Auckland', -36.8626662, 174.725387);
 var au = new City('AU', 'Sydney', -33.8766581, 150.9015058);
 var uk = new City('UK', 'Londres', 51.5287718, -0.2416804);
-var usa = new City('USA', 'Georgia', 42.3173563, 42.2366201);
+var usa = new City('USA', 'Georgia', 32.658071,-85.426872);
 
 var cityArray = [cl, ch, nz, au, uk, usa];
 
