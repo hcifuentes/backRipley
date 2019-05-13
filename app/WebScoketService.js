@@ -12,15 +12,12 @@ server.listen(3001, function () {
 
 io.on('connection', (socket) => {
     console.log('Un cliente se ha conectado');
-    socketIO = socket;
-
     socket.on("disconnect", () => {
         console.log("Un cliente se ha desconectado");
     });
 });
 
 exports.io = io;
-exports.socket = socketIO;
 
 
 
