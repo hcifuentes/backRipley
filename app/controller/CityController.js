@@ -5,7 +5,6 @@ var request = require('request');
 var io = require('./../WebScoketService').io;
 
 http.app.get('/all', (req, res) => {
-    console.log("Get All")
     cityDao.getAllCities(res);
 })
 

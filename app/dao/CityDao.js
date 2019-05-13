@@ -1,7 +1,7 @@
 
 var redisClient = require('../db/redis');
 var City = require('../models/City');
-var url = "https://api.darksky.net/forecast/72d49451abb0c818399bfe187ac1fefc/";
+var url = "https://api.darksky.net/forecast/0867c516c1e2991274cdecf845c3392e/";
 var message = 'How unfortunate! The API Request Failed';
 var errorDao = require('../dao/ErrorDao');
 var Error = require('../models/Error');
@@ -46,6 +46,7 @@ exports.updateInfo = function (socket, request) {
 
 function getRequest(city, socket, request) {
     var api = url + city._latLng._lat + ',' + city._latLng._lng; 
+    console.log(api);
     request({
         url: api,
         json: true
@@ -76,7 +77,6 @@ function parseData(city, data, io) {
 }
 
 function getAllFromRedis(res) {
-    console.log('getall')
     redisClient.hgetall(category, (err, cities) => {
         if (err) {
             console.log('error', err)
