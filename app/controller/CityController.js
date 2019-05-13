@@ -1,38 +1,16 @@
-var express = require('express');
-var app = express();
-// web socket
-var server = require('http').Server(app);
-var io = require('socket.io')(server);
-var cors = require('cors')
-var cityDao = require('../dao/CityDao');
-var apiController = require('../controller/apiController');
+var http = require('./../HTTPServer');
+var cityDao = require('./../dao/CityDao');
+var request = require('request');
 
-app.use(cors({
-    origin: true,
-    credentials: true
-    }));
+var socket = require('./../WebScoketService');
 
-app.listen(3000, function () {
-    console.log('Example app listening on port 3000!');
+http.app.get('/all', (req, res) => {
+    console.log("Get All")
+    cityDao.getAllCities(res);
+})
+
+http.app.get('/reload', (req, res) => {
+    cityDao.updateInfo(socket, request);
+    res.send({ result: 'generando' });
 });
-
-
-app.get('/', (req, res) => {
-    var fun = cityDao.getByKey();
-    fun.findCity('CL')
-    .then(()=> {
-        res.send({ data: JSON.parse(fun.get())  });
-    });
-});
-
-app.get('/reload', (req, res) => {
-    apiController.updateInfo();
-    res.send({result: 'generando'});
-});
-
-
-app.get('/api', (req, res) => {
-    res.send({ data: 'api' });
-});
-
 

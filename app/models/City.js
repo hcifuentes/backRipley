@@ -5,7 +5,7 @@ class City {
     constructor(code, name, lat, lng ) {
         this._code = code;
         this._name = name;
-        this.latLng = new LatLng(lat, lng);
+        this._latLng = new LatLng(lat, lng);
     }
 
     /**

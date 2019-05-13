@@ -1,17 +1,23 @@
 
 var redisClient = require('../db/redis');
 var City = require('../models/City');
+var url = "https://api.darksky.net/forecast/72d49451abb0c818399bfe187ac1fefc/";
+var message = 'How unfortunate! The API Request Failed';
+var errorDao = require('../dao/ErrorDao');
+var Error = require('../models/Error');
+
 
 var category = 'city';
 
 var cl = new City('CL', 'Santiago', -33.4533303, -70.6967031);
-var ch = new City('CH', 'Zurich', 47.3775499, 8.4666755);
-var nz = new City('NZ', 'Auckland', -36.8626662, 174.725387);
-var au = new City('AU', 'Sydney', -33.8766581, 150.9015058);
-var uk = new City('UK', 'Londres', 51.5287718, -0.2416804);
-var usa = new City('USA', 'Georgia', 42.3173563, 42.2366201);
+// var ch = new City('CH', 'Zurich', 47.3775499, 8.4666755);
+// var nz = new City('NZ', 'Auckland', -36.8626662, 174.725387);
+// var au = new City('AU', 'Sydney', -33.8766581, 150.9015058);
+// var uk = new City('UK', 'Londres', 51.5287718, -0.2416804);
+// var usa = new City('USA', 'Georgia', 42.3173563, 42.2366201);
 
-var cityArray = [cl, ch, nz, au, uk, usa];
+var cityArray = [cl]//, ch, nz, au, uk, usa];
+
 
 for (const city of cityArray) {
     save(city);
@@ -22,71 +28,73 @@ function save(city) {
     });
 }
 
-exports.saveCity = function(city) {
+exports.saveCity = function (city) {
     save(city);
 }
 
-exports.getAllKeys = function () {
-    var keys;
-    return {
-        findAllKeys: function () {
-            return new Promise((resolve, reject) => {
-                redisHashesClient.keys('*', (error, result) => {
-                    if (error) {
-                        throw error;
-                    }
-                    keys = result;
-                    resolve();
-                });
-            });
-        },
-        get: function () {
-            return keys;
+exports.getAllCities = function (res) {
+    return getAllFromRedis(res);
+}
+
+exports.updateInfo = function (socket, request) {
+    redisClient.hgetall(category, (err, cities) => {
+        for(const city in cities) {
+            getRequest(JSON.parse(cities[city]), socket, request);
         }
+    })
+}
+
+function getRequest(city, socket, request) {
+    var api = url + city._latLng._lat + ',' + city._latLng._lng; 
+    request({
+        url: api,
+        json: true
+    }, (error, response, body) => {
+        try {
+            if (Math.random(0, 1) < 0.1) {
+                throw new Error(message);
+            } else {
+                data = (!error && response.statusCode === 200) ? response.body : null;
+                parseData(city, data, socket);
+            }
+        } catch (error) {
+            if (message === error._message) {
+                errorDao.save(error);
+                getRequest(city, socket, request);
+            }
+        }
+    });
+}
+
+function parseData(city, data, socket) {
+    if (city._temp != (data).currently.temperature || city._tz != data.timezone) {
+        console.log("dentro")
+        city._temp = (data).currently.temperature;
+        console.log("1")
+        city._tz = data.offset;
+        console.log("2")
+        save(city);
+        console.log("3")
+        socket.socket.broadcast.emit('city', { hello: 'world' });
+        
+        console.log("4")
     }
 }
 
-exports.getAllCities = function() {
-    var cities = [];
-
-    return {
-        findAllCities: function (key) {
-            return new Promise((resolve, reject) => {
-                redisClient.hgetall(category, (err, object) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        cities = object;
-                        resolve(object);
-                    }
-                });
-            });
-        },
-        get: function () {
-            return cities;
+function getAllFromRedis(res) {
+    console.log('getall')
+    redisClient.hgetall(category, (err, cities) => {
+        if (err) {
+            console.log('error', err)
+        } else {
+            console.log("pasando")
+            if (res) {
+                console.log("con res")
+                res.send({ data: cities });
+            } else {
+                console.log('sin res')
+                return cities;
+            }
         }
-    }
-}
-
-
-exports.getByKey = function () {
-    var city = null;
-
-    return {
-        findCity: function (key) {
-            return new Promise((resolve, reject) => {
-                redisClient.hmget(category, key, (err, object) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        city = object;
-                        resolve(object);
-                    }
-                });
-            });
-        },
-        get: function () {
-            return city;
-        }
-    }
+    });
 }
