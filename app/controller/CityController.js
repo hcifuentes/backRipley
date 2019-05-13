@@ -2,7 +2,7 @@ var http = require('./../HTTPServer');
 var cityDao = require('./../dao/CityDao');
 var request = require('request');
 
-var socket = require('./../WebScoketService');
+var io = require('./../WebScoketService').io;
 
 http.app.get('/all', (req, res) => {
     console.log("Get All")
@@ -10,7 +10,7 @@ http.app.get('/all', (req, res) => {
 })
 
 http.app.get('/reload', (req, res) => {
-    cityDao.updateInfo(socket, request);
+    cityDao.updateInfo(io, request);
     res.send({ result: 'generando' });
 });
 
